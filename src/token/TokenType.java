@@ -23,6 +23,7 @@ public enum TokenType {
 	REF,		//ref
 	RETURN,		//return
 	VOID,		//void
+	NOT, 		//not
 	PLUS,		// +
 	MINUS,		// -
 	MULT,		// *
