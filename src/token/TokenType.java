@@ -4,7 +4,7 @@ public enum TokenType {
 	ID,			//identifier
 	NUM,		//number
 	BLIT,		//boolean literal
-	ENDFILE, 	//endfile
+	ENDFILE, 	//end of file
 	ERROR, 		//error
 	AND,		//and
 	BOOL,		//bool

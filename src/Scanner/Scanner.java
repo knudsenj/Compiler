@@ -45,7 +45,7 @@ public class Scanner {
 		
 		//String Catch (Upper || Lower case)
 		if((65 <= (int)current_line.charAt(current_char) && (int)current_line.charAt(current_char) <= 90) || (97 <= (int)current_line.charAt(current_char) && (int)current_line.charAt(current_char) <= 122 )){
-			System.out.println("Found String");
+			System.out.println("Found Word");
 		}
 			
 			//start String procedure
@@ -53,7 +53,7 @@ public class Scanner {
 				
 		//Num Catch
 		if(48 <= (int)current_line.charAt(current_char) && (int)current_line.charAt(current_char) <= 57){
-			System.out.println("Found Num");
+			System.out.println("Found Numeral");
 		}
 			
 			//start NUM procedure
@@ -81,28 +81,28 @@ public class Scanner {
 		//Plus Catch
 		if((int)current_line.charAt(current_char) == 43){		
 			System.out.println("Plus");
-			Token T = new Token(TokenType.PLUS,"");
+			Token T = new Token(TokenType.PLUS,null);
 			current_char++;
 			return T;
 		}
 		//Minus Catch
 		if((int)current_line.charAt(current_char) == 45){		
 			System.out.println("Minus");
-			Token T = new Token(TokenType.MINUS,"");
+			Token T = new Token(TokenType.MINUS,null);
 			current_char ++;
 			return T;
 		}
 		//Mult Catch
 		if((int)current_line.charAt(current_char) == 42){		
 			System.out.println("Mult");
-			Token T = new Token(TokenType.MULT,"");
+			Token T = new Token(TokenType.MULT,null);
 			current_char ++;
 			return T;
 		}
 		//Div Catch
 		if((int)current_line.charAt(current_char) == 47){		
 			System.out.println("Div");
-			Token T = new Token(TokenType.DIV,"");
+			Token T = new Token(TokenType.DIV,null);
 			current_char ++;
 			return T;
 		}

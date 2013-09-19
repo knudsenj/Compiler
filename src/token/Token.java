@@ -16,4 +16,15 @@ public class Token {
 	public TokenType getName() {
 		return name;
 	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		return sb.append("Token(")
+				.append(name)
+				.append(",")
+				.append(lexeme)
+				.append(")")
+				.toString();
+	}
 }
