@@ -1,4 +1,4 @@
-package Scanner;
+package compiler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -256,9 +256,14 @@ public class Scanner {
 	private Token trace(Token t){
 		if(tracing){
 			System.out.print("\t"+t);
-			if(t.getName() == TokenType.ID){
+			switch(t.getName()){
+			case ID:
 				System.out.println(": "+wordTable.get(t.getLexeme()));
-			} else {
+				break;
+			case ERROR:
+				System.out.println(": "+ErrorUtility.decodeError(t.getLexeme()));
+				break;
+			default:
 				System.out.println();
 			}
 		}

@@ -1,12 +1,6 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
-import token.Token;
-import token.TokenType;
-import Scanner.Scanner;
+import compiler.Parser;
 
 
 public class Main {
@@ -31,20 +25,8 @@ public class Main {
 				fileName = arg;
 			}
 		}
-		File file = new File(fileName);
-		BufferedReader  myReader = null; 
-		try{
-			myReader = new BufferedReader(new FileReader(file));
-		} catch(IOException e){
-			System.out.println("File not found");
-		}
-		Scanner myScanner = new Scanner(myReader);
-		myScanner.setTrace(scannerTrace);
-		
-		Token t = null;
-		do{
-			t = myScanner.nextToken();
-		} while(t.getName() != TokenType.ENDFILE);
-		
+		Parser p = new Parser(new File(fileName));
+		p.setScannerTrace(scannerTrace);
+		p.start();
 	}
 }
