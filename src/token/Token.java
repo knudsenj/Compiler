@@ -2,14 +2,14 @@ package token;
 
 public class Token {
 	private TokenType name;
-	private String lexeme;
+	private Integer lexeme;
 	
-	public Token(TokenType name, String lexeme){
+	public Token(TokenType name, Integer lexeme){
 		this.name = name;
 		this.lexeme = lexeme;
 	}
 
-	public String getLexeme() {
+	public Integer getLexeme() {
 		return lexeme;
 	}
 
@@ -22,7 +22,7 @@ public class Token {
 		StringBuilder sb = new StringBuilder();
 		return sb.append("Token(")
 				.append(name)
-				.append(",")
+				.append(", ")
 				.append(lexeme)
 				.append(")")
 				.toString();

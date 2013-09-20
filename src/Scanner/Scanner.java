@@ -11,16 +11,17 @@ import token.TokenType;
 
 public class Scanner {
 	private static HashMap<String, Token> symbolMap;
-	private static HashMap<String, Token> wordTable;
+	private HashMap<String, Token> wordTable;
+	private int wordIndex;
 	static{
 		symbolMap = new HashMap<>();
 		symbolMap.put("+", new Token(TokenType.PLUS, null));
 		symbolMap.put("-", new Token(TokenType.MINUS, null));
 		symbolMap.put("*", new Token(TokenType.MULT, null));
 		symbolMap.put("/", new Token(TokenType.DIV, null));
-		symbolMap.put("&", new Token(TokenType.ERROR, "no such symbol"));
+		symbolMap.put("&", new Token(TokenType.ERROR, (int)'&'));
 		symbolMap.put("&&", new Token(TokenType.ANDTHEN, null));
-		symbolMap.put("|", new Token(TokenType.ERROR, "no such symbol"));
+		symbolMap.put("|", new Token(TokenType.ERROR, (int)'|'));
 		symbolMap.put("||", new Token(TokenType.ORELSE, null));
 		symbolMap.put("<", new Token(TokenType.LT, null));
 		symbolMap.put("<=", new Token(TokenType.LTEQ, null));
@@ -29,6 +30,7 @@ public class Scanner {
 		symbolMap.put("=", new Token(TokenType.EQ, null));
 		symbolMap.put("/=", new Token(TokenType.NEQ, null));
 		symbolMap.put(":=", new Token(TokenType.ASSIGN, null));
+		symbolMap.put(":", new Token(TokenType.ERROR, (int)':'));
 		symbolMap.put(";", new Token(TokenType.SEMI, null));
 		symbolMap.put(",", new Token(TokenType.COMMA, null));
 		symbolMap.put("(", new Token(TokenType.LPAREN, null));
@@ -38,6 +40,20 @@ public class Scanner {
 		symbolMap.put("{", new Token(TokenType.LCRLY, null));
 		symbolMap.put("}", new Token(TokenType.RCRLY, null));
 		
+	}
+	private int comment_counter;
+	private int start, end;
+	private String current_line;
+	private BufferedReader input;
+	private boolean tracing;
+	private int line_number;
+	
+	public Scanner(BufferedReader input){
+		start = end = comment_counter = wordIndex = 0;
+		tracing = false;
+		line_number = 0;
+		current_line = null;
+		this.input = input;
 		wordTable = new HashMap<>();
 		wordTable.put("and", new Token(TokenType.AND, null));
 		wordTable.put("bool", new Token(TokenType.BOOL, null));
@@ -57,168 +73,165 @@ public class Scanner {
 		wordTable.put("return", new Token(TokenType.RETURN, null));
 		wordTable.put("void", new Token(TokenType.VOID, null));
 		wordTable.put("not", new Token(TokenType.NOT, null));
-	}
-	int comment_counter = 0;
-	private int end;
-	private String current_line;
-	private BufferedReader input;
-
-	
-	
-	
-	public Scanner(BufferedReader input){
-		end = 0;
-		
-		current_line = null;
-		this.input = input;
+		wordTable.put("true", new Token(TokenType.BLIT, 1));
+		wordTable.put("false", new Token(TokenType.BLIT, 0));
 	}
 	
 	public Token nextToken(){
-		
-		String str = "";
 		/*
 		 * read a line if no current line, if at the end of the line get a new line 
 		 */
-		if(current_line == null || end == current_line.length()){
+		if(current_line == null || start >= current_line.length()-1){
 			try {
 				current_line = input.readLine();
-				//System.out.println("reading next line");
+				if(tracing){
+					System.out.println(++line_number+": "+current_line);
+				}
+				if(current_line.equals("null")){
+					return new Token(TokenType.ENDFILE, null);
+				}
+				current_line += " ";
 			} catch (IOException e) {
-				System.out.println("no line to read");
+				System.out.println("an IOException occured when reading line in scanner");
 			}
-			end = 0;
+			start = end = 0;
 		}
 			
-		// Ignore control characters and whitespace before comment
-		while(current_line.length() > end && (int)current_line.charAt(end) <= 32){
-			end++;
+		// Ignore control characters and whitespace
+		try{
+			while(Character.isWhitespace(current_line.charAt(end))){
+				start = ++end;
+			}
+		}catch(StringIndexOutOfBoundsException e){
+			return nextToken();
 		}
 		
 
 		// Comment Catch
 		if(current_line.length() > end + 1 && (int)current_line.charAt(end) == 47 && (int)current_line.charAt(end+1) == 42){
-				comment_counter++;
-				end += 2;
-				//New line within Comment
+			comment_counter++;
+			end += 2;
+			//New line within Comment
+			if(current_line == null || end == current_line.length()){
+				try {
+					current_line = input.readLine();
+				} catch (IOException e) {
+					System.out.println("no line to read");
+				}
+				end = 0;
+			}
+		
+			while(comment_counter > 0){
+				if((int)current_line.charAt(end) == 47 && (int)current_line.charAt(end+1) == 42){
+					comment_counter++;
+					end += 2;
+				}
+				if((int)current_line.charAt(end) == 42 && (int)current_line.charAt(end+1) == 47){
+					comment_counter--; 
+					end +=2;
+				}
+				else{
+					end ++;
+				}
+				//New line within comment
 				if(current_line == null || end == current_line.length()){
 					try {
 						current_line = input.readLine();
-						//System.out.println("reading next line");
 					} catch (IOException e) {
 						System.out.println("no line to read");
 					}
 					end = 0;
 				}
-			
-				while(comment_counter > 0){
-					if((int)current_line.charAt(end) == 47 && (int)current_line.charAt(end+1) == 42){
-						comment_counter++;
-						end += 2;
-					}
-					if((int)current_line.charAt(end) == 42 && (int)current_line.charAt(end+1) == 47){
-						comment_counter--; 
-						end +=2;
-					}
-					else{
-						end ++;
-					}
-					//New line within comment
-					if(current_line == null || end == current_line.length()){
-						try {
-							current_line = input.readLine();
-							//System.out.println("reading next line");
-						} catch (IOException e) {
-							System.out.println("no line to read");
-						}
-						end = 0;
-					}
-					
-				}			
 			}
-				
-		
-		
-		// Ignore control characters and whitespace after comment
-		while(current_line.length() > end && (int)current_line.charAt(end) <= 32){
-			end++;
+			start = end;
+			return nextToken();
 		}
 		
-		
-		//Next line if trailing whitespace after comment
-		if(current_line == null || end == current_line.length()){
-			try {
-				current_line = input.readLine();
-				//System.out.println("reading next line");
-			} catch (IOException e) {
-				System.out.println("no line to read");
-			}
-			end = 0;
-		}
-		
-		
-
-		
-		
-		
-		
+		Token t = null;
 		// ID/Keyword Catch
-		if((65 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 90) || (97 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 122 )){		
-			str = str + current_line.charAt(end);
-			end++;
-			while(current_line.length() > end  && ((65 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 90) || (97 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 122 ) || (48 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 57)))
-			{
-				str = str + current_line.charAt(end);
-				end++;
+		if(Character.isLetter(current_line.charAt(start))){		
+			t = wordToken();
+			if(tracing){
+				System.out.println("\t"+t);
 			}
-			//check for Keyword in table
-			Token T = wordTable.get(str);
-			if(T != null){
-				return T;
-			}
-			else{
-				T = new Token(TokenType.ID,str);
-				return T;
-			}
+			return t;
 		}
 		
 		// Number Catch
-		if(48 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 57){
-			str = str + current_line.charAt(end);
-			end++;
-			while(current_line.length() > end  && ( 48 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 57)){
-				str = str + current_line.charAt(end);
-				end++;
+		if(Character.isDigit(current_line.charAt(end))){
+			t = numeralToken();
+			if(tracing){
+				System.out.println("\t"+t);
 			}
-			Token T = new Token(TokenType.NUM,str);
-			end++;
-			return T;
+			return t;
 		}
 
 		// Symbol Catch
-		str = str + current_line.charAt(end);
-		end++;
-		Token T = symbolMap.get(str);
-		if (T != null && current_line.length() > end)
-		{
-			str = str + current_line.charAt(end);
-			Token U = symbolMap.get(str);
-			if( U != null){
-				end++;
-				return U;
+		if(symbolMap.containsKey(current_line.charAt(start)+"")){
+			t = symbolToken();
+			if(tracing){
+				System.out.println("\t"+t);
 			}
-			else{
-				return T;
-			}
-		}
-		if(T != null){
-			return T;
-		}
-		else{
-			//report error
-			System.out.println("Unrecognized Symbol:"+str);
-			return null;
+			return t;
 		}
 		
-		
+		// Unrecognized character
+		start = ++end;
+		t = new Token(TokenType.ERROR, (int)current_line.charAt(start-1));
+		if(tracing){
+			System.out.println("\t"+t);
+		}
+		return t;
+	}
+	
+	private Token symbolToken(){
+		if(symbolMap.containsKey(current_line.substring(start, end+1))){
+			end++;
+			return symbolToken();
+		}
+		Token t = symbolMap.get(current_line.substring(start, end));
+		start = end;
+		return t;
+	}
+	
+	private Token numeralToken(){
+		if(Character.isDigit(current_line.charAt(end))){
+			end++;
+			return numeralToken();
+		}
+		Token t;
+		try{
+			int i = Integer.parseInt(current_line.substring(start, end));
+			t = new Token(TokenType.NUM, i);
+		} catch(NumberFormatException e){
+			t = new Token(TokenType.ERROR, -1);
+		}
+		start = end;
+		return t;
+	}
+	
+	private Token wordToken(){
+		if(Character.isLetterOrDigit(current_line.charAt(end)) ||
+				current_line.charAt(end) == '_' ||
+				current_line.charAt(end) == '$'){
+			end++;
+			return wordToken();
+		}
+		String word = current_line.substring(start, end);
+		start = end;
+		if(wordTable.containsKey(word)){
+			return wordTable.get(word);
+		} else {
+			wordTable.put(word, new Token(TokenType.ID, wordIndex++));
+			return wordTable.get(word);
+		}
+	}
+	
+	public void setTrace(boolean tracing){
+		this.tracing = tracing;
+	}
+	
+	public boolean isTracing(){
+		return this.tracing;
 	}
 }
