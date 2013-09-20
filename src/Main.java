@@ -19,8 +19,11 @@ public class Main {
 		}
 		Scanner myScanner = new Scanner(myReader);
 		
-		while(true){
+		
+		int x= 0;
+		while(x < 20){
 			System.out.println(myScanner.nextToken());
+			x++;
 		}
 		
 	}

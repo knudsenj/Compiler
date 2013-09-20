@@ -58,64 +58,58 @@ public class Scanner {
 		wordTable.put("void", new Token(TokenType.VOID, null));
 		wordTable.put("not", new Token(TokenType.NOT, null));
 	}
-	
-	private int start;
+	int comment_counter = 0;
 	private int end;
 	private String current_line;
 	private BufferedReader input;
 
+	
+	
+	
 	public Scanner(BufferedReader input){
-		start = end = 0;
+		end = 0;
+		
 		current_line = null;
 		this.input = input;
 	}
 	
 	public Token nextToken(){
-		int comment_counter = 0;
 		
+		String str = "";
 		/*
-		 * read a line if no current line, if at the end of the line get a new line
+		 * read a line if no current line, if at the end of the line get a new line 
 		 */
-		if(current_line == null){
+		if(current_line == null || end == current_line.length()){
 			try {
 				current_line = input.readLine();
+				//System.out.println("reading next line");
 			} catch (IOException e) {
 				System.out.println("no line to read");
 			}
-			start = end = 0;
+			end = 0;
 		}
 			
-		
-
-		
-		//Ignore control characters, TODO fix this to not ignore whitespace
-		if( (int)current_line.charAt(end) < 32){
+		// Ignore control characters and whitespace before comment
+		while(current_line.length() > end && (int)current_line.charAt(end) <= 32){
 			end++;
 		}
 		
-	
-	//Branch based on character
-		
-		//String Catch (Upper || Lower case)
-		if((65 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 90) || (97 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 122 )){
-			System.out.println("Found Word");
-		}
-			
-			//start String procedure
-				//check for keyword
-				
-		//Num Catch
-		if(48 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 57){
-			System.out.println("Found Numeral");
-		}
-			
-			//start NUM procedure
-			
-		//TODO change to switch statement	
-		//Comment catch
+
+		// Comment Catch
 		if(current_line.length() > end + 1 && (int)current_line.charAt(end) == 47 && (int)current_line.charAt(end+1) == 42){
 				comment_counter++;
-				end += 2;	
+				end += 2;
+				//New line within Comment
+				if(current_line == null || end == current_line.length()){
+					try {
+						current_line = input.readLine();
+						//System.out.println("reading next line");
+					} catch (IOException e) {
+						System.out.println("no line to read");
+					}
+					end = 0;
+				}
+			
 				while(comment_counter > 0){
 					if((int)current_line.charAt(end) == 47 && (int)current_line.charAt(end+1) == 42){
 						comment_counter++;
@@ -128,61 +122,103 @@ public class Scanner {
 					else{
 						end ++;
 					}
+					//New line within comment
+					if(current_line == null || end == current_line.length()){
+						try {
+							current_line = input.readLine();
+							//System.out.println("reading next line");
+						} catch (IOException e) {
+							System.out.println("no line to read");
+						}
+						end = 0;
+					}
+					
 				}			
 			}
+				
+		
+		
+		// Ignore control characters and whitespace after comment
+		while(current_line.length() > end && (int)current_line.charAt(end) <= 32){
+			end++;
+		}
+		
+		
+		//Next line if trailing whitespace after comment
+		if(current_line == null || end == current_line.length()){
+			try {
+				current_line = input.readLine();
+				//System.out.println("reading next line");
+			} catch (IOException e) {
+				System.out.println("no line to read");
+			}
+			end = 0;
+		}
+		
+		
 
-		//Plus Catch
-		if((int)current_line.charAt(end) == 43){		
-			System.out.println("Plus");
-			Token T = new Token(TokenType.PLUS,null);
-			start = ++end;
-			return T;
-		}
-		//Minus Catch
-		if((int)current_line.charAt(end) == 45){		
-			System.out.println("Minus");
-			Token T = new Token(TokenType.MINUS,null);
-			start = ++end;
-			return T;
-		}
-		//Mult Catch
-		if((int)current_line.charAt(end) == 42){		
-			System.out.println("Mult");
-			Token T = new Token(TokenType.MULT,null);
-			start = ++end;
-			return T;
-		}
-		//Div Catch
-		if((int)current_line.charAt(end) == 47){		
-			System.out.println("Div");
-			Token T = new Token(TokenType.DIV,null);
-			start = ++end;
-			return T;
-		}
-		return null;
-	}
-	
-	/** 
-	 * Determined it is a word token, find word and return token. 
-	 * It must start with a letter.
-	 * Valid character set: a .. z | A .. Z | 0 .. 9 | _ | $
-	 * @return ID token, or special keyword token
-	 */
-	private Token wordToken(){
-		//TODO map of keywords
 		
-		return null;
-	}
-	
-	private Token numeralToken(){
-		//TODO
 		
-		return null;
-	}
-	
-	private Token symbolToken(){
-		//TODO
 		
-		return null;
+		
+		// ID/Keyword Catch
+		if((65 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 90) || (97 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 122 )){		
+			str = str + current_line.charAt(end);
+			end++;
+			while(current_line.length() > end  && ((65 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 90) || (97 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 122 ) || (48 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 57)))
+			{
+				str = str + current_line.charAt(end);
+				end++;
+			}
+			//check for Keyword in table
+			Token T = wordTable.get(str);
+			if(T != null){
+				return T;
+			}
+			else{
+				T = new Token(TokenType.ID,str);
+				return T;
+			}
+		}
+		
+		// Number Catch
+		if(48 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 57){
+			str = str + current_line.charAt(end);
+			end++;
+			while(current_line.length() > end  && ( 48 <= (int)current_line.charAt(end) && (int)current_line.charAt(end) <= 57)){
+				str = str + current_line.charAt(end);
+				end++;
+			}
+			Token T = new Token(TokenType.NUM,str);
+			end++;
+			return T;
+		}
+
+		// Symbol Catch
+		str = str + current_line.charAt(end);
+		end++;
+		Token T = symbolMap.get(str);
+		if (T != null && current_line.length() > end)
+		{
+			str = str + current_line.charAt(end);
+			Token U = symbolMap.get(str);
+			if( U != null){
+				end++;
+				return U;
+			}
+			else{
+				return T;
+			}
+		}
+		if(T != null){
+			return T;
+		}
+		else{
+			//report error
+			System.out.println("Unrecognized Symbol:"+str);
+			return null;
+		}
+		
+		
 	}
 }
