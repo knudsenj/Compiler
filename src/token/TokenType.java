@@ -45,8 +45,8 @@ public enum TokenType {
 	RSQR,		// ]
 	LCRLY,		// {
 	RCRLY,		// }
-	
-
+	NSTCOM,		// /* NOT RETURNABLE
+	COM			// -- NOT RETURNABLE
 }
 
 
