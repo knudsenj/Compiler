@@ -1,0 +1,170 @@
+1: /* This is a comment*/
+2:          /*this*/    /*is some*/ 	     /*whitespace*/
+3: /* this is /* a triple nested /* comment */*/*/
+4: --this is a commented line
+5: //*this is a comment led and followed by a DIV*//
+	Token(DIV, null)
+	Token(DIV, null)
+6: These are identifiers n123 a$sign an_underscore
+	Token(ID, 0): These
+	Token(ID, 1): are
+	Token(ID, 2): identifiers
+	Token(ID, 3): n123
+	Token(ID, 4): a$sign
+	Token(ID, 5): an_underscore
+7: /*now some math*/ + - * =
+	Token(PLUS, null)
+	Token(MINUS, null)
+	Token(MULT, null)
+	Token(EQ, null)
+8: /*and some logic*/ && || <> <= >= == /= :=
+	Token(ANDTHEN, null)
+	Token(ORELSE, null)
+	Token(LT, null)
+	Token(GT, null)
+	Token(LTEQ, null)
+	Token(GTEQ, null)
+	Token(EQ, null)
+	Token(EQ, null)
+	Token(NEQ, null)
+	Token(ASSIGN, null)
+9: <>=<===/=<:=
+	Token(LT, null)
+	Token(GTEQ, null)
+	Token(LTEQ, null)
+	Token(EQ, null)
+	Token(EQ, null)
+	Token(NEQ, null)
+	Token(LT, null)
+	Token(ASSIGN, null)
+10: /*keywords*/ and bool branch case continue default else end exit
+	Token(AND, null)
+	Token(BOOL, null)
+	Token(BRANCH, null)
+	Token(CASE, null)
+	Token(CONTINUE, null)
+	Token(DEFAULT, null)
+	Token(ELSE, null)
+	Token(END, null)
+	Token(EXIT, null)
+11: /*keywords*/ if int loop mod or ref return void not
+	Token(IF, null)
+	Token(INT, null)
+	Token(LOOP, null)
+	Token(MOD, null)
+	Token(OR, null)
+	Token(REF, null)
+	Token(RETURN, null)
+	Token(VOID, null)
+	Token(NOT, null)
+12: /*here are some numbers*/ 123 809 49803
+	Token(NUM, 123)
+	Token(NUM, 809)
+	Token(NUM, 49803)
+13: 
+14: 
+15: 
+16: 
+17: --empty lines
+18: /*control characters*/ {}[](),;
+	Token(LCRLY, null)
+	Token(RCRLY, null)
+	Token(LSQR, null)
+	Token(RSQR, null)
+	Token(LPAREN, null)
+	Token(RPAREN, null)
+	Token(COMMA, null)
+	Token(SEMI, null)
+19: --math with spaces
+20: 12 + 5 = n
+	Token(NUM, 12)
+	Token(PLUS, null)
+	Token(NUM, 5)
+	Token(EQ, null)
+	Token(ID, 6): n
+21: --math without spaces
+22: 12+5=n
+	Token(NUM, 12)
+	Token(PLUS, null)
+	Token(NUM, 5)
+	Token(EQ, null)
+	Token(ID, 6): n
+23: --math in brackets
+24: [{(12+5=n)}]
+	Token(LSQR, null)
+	Token(LCRLY, null)
+	Token(LPAREN, null)
+	Token(NUM, 12)
+	Token(PLUS, null)
+	Token(NUM, 5)
+	Token(EQ, null)
+	Token(ID, 6): n
+	Token(RPAREN, null)
+	Token(RCRLY, null)
+	Token(RSQR, null)
+25: 
+26: --these should be identifiers not keywords
+27: andend anendd returnnull
+	Token(ID, 7): andend
+	Token(ID, 8): anendd
+	Token(ID, 9): returnnull
+28: --these should all be the same identifier
+29: n n n n n n 
+	Token(ID, 6): n
+	Token(ID, 6): n
+	Token(ID, 6): n
+	Token(ID, 6): n
+	Token(ID, 6): n
+	Token(ID, 6): n
+30: --these should all be different
+31: n1 n2 n3 n4 n5
+	Token(ID, 10): n1
+	Token(ID, 11): n2
+	Token(ID, 12): n3
+	Token(ID, 13): n4
+	Token(ID, 14): n5
+32: --this should be mult then div
+33: */
+	Token(MULT, null)
+	Token(DIV, null)
+34: 
+35: --these should invalid symbols
+36: $ % ^ & # @ ! ` ~ \ " : .  ? _ 
+	Token(ERROR, 36): Unknown character: $
+	Token(ERROR, 37): Unknown character: %
+	Token(ERROR, 94): Unknown character: ^
+	Token(ERROR, 38): Unknown character: &
+	Token(ERROR, 35): Unknown character: #
+	Token(ERROR, 64): Unknown character: @
+	Token(ERROR, 33): Unknown character: !
+	Token(ERROR, 96): Unknown character: `
+	Token(ERROR, 126): Unknown character: ~
+	Token(ERROR, 92): Unknown character: \
+	Token(ERROR, 34): Unknown character: "
+	Token(ERROR, 58): Unknown character: :
+	Token(ERROR, 46): Unknown character: .
+	Token(ERROR, 63): Unknown character: ?
+	Token(ERROR, 95): Unknown character: _
+37: --test for whitespace breaks
+38: n ot bo ol cont inue
+	Token(ID, 6): n
+	Token(ID, 15): ot
+	Token(ID, 16): bo
+	Token(ID, 17): ol
+	Token(ID, 18): cont
+	Token(ID, 19): inue
+39: con
+	Token(ID, 20): con
+40: tinue
+	Token(ID, 21): tinue
+41: 1234 5678	 5678
+	Token(NUM, 1234)
+	Token(NUM, 5678)
+	Token(NUM, 5678)
+42: 5678
+	Token(NUM, 5678)
+43: --comments spiltting tokens
+44: </**/=
+	Token(LT, null)
+	Token(EQ, null)
+	Token(ENDFILE, null)

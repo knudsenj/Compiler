@@ -37,7 +37,7 @@ public enum TokenType {
 	EQ,			// =
 	NEQ,		// /=
 	ASSIGN,		// :=
-	SEMI,		// ;
+	SEMI,	   	// ;
 	COMMA,		// ,
 	LPAREN,		// (
 	RPAREN,		// )

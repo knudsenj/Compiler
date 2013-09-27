@@ -1,0 +1,44 @@
+/* This is a comment*/
+         /*this*/    /*is some*/ 	     /*whitespace*/
+/* this is /* a triple nested /* comment */*/*/
+--this is a commented line
+//*this is a comment led and followed by a DIV*//
+These are identifiers n123 a$sign an_underscore
+/*now some math*/ + - * =
+/*and some logic*/ && || <> <= >= == /= :=
+<>=<===/=<:=
+/*keywords*/ and bool branch case continue default else end exit
+/*keywords*/ if int loop mod or ref return void not
+/*here are some numbers*/ 123 809 49803
+
+
+
+
+--empty lines
+/*control characters*/ {}[](),;
+--math with spaces
+12 + 5 = n
+--math without spaces
+12+5=n
+--math in brackets
+[{(12+5=n)}]
+
+--these should be identifiers not keywords
+andend anendd returnnull
+--these should all be the same identifier
+n n n n n n 
+--these should all be different
+n1 n2 n3 n4 n5
+--this should be mult then div
+*/
+
+--these should invalid symbols
+$ % ^ & # @ ! ` ~ \ " : .  ? _ 
+--test for whitespace breaks
+n ot bo ol cont inue
+con
+tinue
+1234 5678	 5678
+5678
+--comments spiltting tokens
+</**/=
